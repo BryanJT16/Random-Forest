@@ -1,112 +1,105 @@
-# Data Science Project Boilerplate
+# Predicción de Diabetes – Árboles, Random Forest y Boosting
 
-This boilerplate is designed to kickstart data science projects by providing a basic setup for database connections, data processing, and machine learning model development. It includes a structured folder organization for your datasets and a set of pre-defined Python packages necessary for most data science tasks.
+📘 **Descripción del Proyecto**
+Este proyecto es la continuación del modelo inicial basado en Árboles de Decisión para la predicción de diabetes. En esta segunda fase se amplía el enfoque incorporando modelos de ensamble más avanzados como **Random Forest** y distintos métodos de **Boosting**, con el objetivo de mejorar la capacidad predictiva, la estabilidad del modelo y su generalización sobre datos no vistos.
 
-## Structure
+🧩 **Contexto**
+Aunque los Árboles de Decisión ofrecen una gran interpretabilidad, suelen presentar problemas de sobreajuste y alta varianza cuando se utilizan de forma individual. Para abordar estas limitaciones, se exploran técnicas de ensamble que combinan múltiples árboles de decisión. Estas técnicas permiten capturar patrones más complejos y reducir el error del modelo, algo especialmente relevante en un contexto clínico donde la fiabilidad de las predicciones es crucial.
 
-The project is organized as follows:
+🎯 **Objetivos**
 
-- **`src/app.py`** → Main Python script where your project will run.
-- **`src/explore.ipynb`** → Notebook for exploration and testing. Once exploration is complete, migrate the clean code to `app.py`.
-- **`src/utils.py`** → Auxiliary functions, such as database connection.
-- **`requirements.txt`** → List of required Python packages.
-- **`models/`** → Will contain your SQLAlchemy model classes.
-- **`data/`** → Stores datasets at different stages:
-  - **`data/raw/`** → Raw data.
-  - **`data/interim/`** → Temporarily transformed data.
-  - **`data/processed/`** → Data ready for analysis.
+* Extender el modelo inicial de Árbol de Decisión mediante técnicas de ensamble.
+* Implementar y comparar un **Random Forest Classifier**.
+* Aplicar distintos métodos de **Boosting** (Gradient Boosting y XGBoost).
+* Evaluar y comparar el rendimiento de los modelos.
+* Seleccionar y guardar el mejor modelo final para su uso posterior.
 
+📊 **Resumen de Características**
+El modelo utiliza variables clínicas comunes para la predicción de diabetes:
 
-## ⚡ Initial Setup in Codespaces (Recommended)
+* **Pregnancies**: Número de embarazos
+* **Glucose**: Concentración de glucosa en plasma
+* **BloodPressure**: Presión arterial diastólica
+* **SkinThickness**: Grosor del pliegue cutáneo
+* **Insulin**: Insulina sérica
+* **BMI**: Índice de masa corporal
+* **DiabetesPedigreeFunction**: Historial familiar de diabetes
+* **Age**: Edad del paciente
+* **Outcome**: Variable objetivo (0 = no diabetes, 1 = diabetes)
 
-No manual setup is required, as **Codespaces is automatically configured** with the predefined files created by the academy for you. Just follow these steps:
+🚀 **Metodología**
 
-1. **Wait for the environment to configure automatically**.
-   - All necessary packages and the database will install themselves.
-   - The automatically created `username` and `db_name` are in the **`.env`** file at the root of the project.
-2. **Once Codespaces is ready, you can start working immediately**.
+### 1. Preprocesamiento de Datos
 
+* Conversión de valores biológicamente imposibles (ceros) en valores nulos.
+* Imputación de valores faltantes utilizando estadísticas robustas (mediana).
+* Separación de los datos en conjuntos de entrenamiento y prueba.
 
-## 💻 Local Setup (Only if you can't use Codespaces)
+### 2. Modelos Implementados
 
-**Prerequisites**
+#### Árbol de Decisión
 
-Make sure you have Python 3.11+ installed on your machine. You will also need pip to install the Python packages.
+Se parte del modelo base previamente entrenado, utilizado como referencia para la comparación.
 
-**Installation**
+#### Random Forest
 
-Clone the project repository to your local machine.
+* Construcción de un bosque de múltiples árboles de decisión.
+* Reducción de la varianza mediante muestreo aleatorio de datos y características.
+* Mejora de la estabilidad y capacidad de generalización.
 
-Navigate to the project directory and install the required Python packages:
+#### Boosting
 
-```bash
-pip install -r requirements.txt
-```
+Se implementan diferentes enfoques de boosting:
 
-**Create a database (if necessary)**
+##### Gradient Boosting
 
-Create a new database within the Postgres engine by customizing and executing the following command:
+* Entrenamiento secuencial de árboles.
+* Cada nuevo árbol corrige los errores del anterior.
+* Especialmente eficaz en la reducción del sesgo.
 
-```bash
-$ psql -U postgres -c "DO \$\$ BEGIN 
-    CREATE USER my_user WITH PASSWORD 'my_password'; 
-    CREATE DATABASE my_database OWNER my_user; 
-END \$\$;"
-```
-Connect to the Postgres engine to use your database, manipulate tables, and data:
+##### XGBoost
 
-```bash
-$ psql -U my_user -d my_database
-```
+* Implementación optimizada de Gradient Boosting.
+* Mayor eficiencia computacional.
+* Mejor manejo del sobreajuste mediante regularización.
 
-Once inside PSQL, you can create tables, run queries, insert, update, or delete data, and much more!
+### 3. Evaluación de Modelos
 
-**Environment Variables**
+* Comparación de métricas de rendimiento (accuracy y otros indicadores).
+* Identificación del mejor modelo de Boosting.
 
-Create a .env file in the root directory of the project to store your environment variables, such as your database connection string:
+### 4. Persistencia del Modelo
 
-```makefile
-DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>"
+* Guardado del mejor modelo final entrenado para su reutilización futura.
 
-#example
-DATABASE_URL="postgresql://my_user:my_password@localhost:5432/my_database"
-```
+🧠 **Fundamentos Teóricos**
 
-## Running the Application
+#### ¿Por qué usar modelos de ensamble?
 
-To run the application, execute the app.py script from the root directory of the project:
+Los modelos de ensamble combinan múltiples modelos débiles para construir un modelo fuerte. En el caso de los árboles:
 
-```bash
-python src/app.py
-```
+* Reducen el sobreajuste.
+* Mejoran la robustez ante ruido.
+* Capturan relaciones no lineales complejas.
 
-## Adding Models
+#### Diferencia entre Random Forest y Boosting
 
-To add SQLAlchemy model classes, create new Python script files within the models/ directory. These classes should be defined according to your database schema.
+* **Random Forest**: árboles independientes entrenados en paralelo.
+* **Boosting**: árboles dependientes entrenados de forma secuencial.
 
-Example model definition (`models/example_model.py`):
+⚙️ **Aplicación en este Proyecto**
+El uso de Random Forest y Boosting permite obtener modelos más precisos que el Árbol de Decisión individual, manteniendo un equilibrio entre interpretabilidad y rendimiento. El modelo final puede utilizarse como herramienta de apoyo para la detección temprana de pacientes con alto riesgo de diabetes.
 
-```py
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+🧠 **Tecnologías Utilizadas**
 
-Base = declarative_base()
+* Python
+* Pandas, NumPy
+* Matplotlib, Seaborn
+* Scikit-learn
+* XGBoost
+* Jupyter Notebook
 
-class ExampleModel(Base):
-    __tablename__ = 'example_table'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-```
-
-## Working with Data
-
-You can place your raw datasets in the data/raw directory, intermediate datasets in data/interim, and processed datasets ready for analysis in data/processed.
-
-To process data, you can modify the app.py script to include your data processing steps, using pandas for data manipulation and analysis.
-
-## Contributors
-
-This template was built as part of the [Data Science and Machine Learning Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning) by 4Geeks Academy by [Alejandro Sanchez](https://twitter.com/alesanchezr) and many other contributors. Learn more about [4Geeks Academy BootCamp programs](https://4geeksacademy.com/us/programs) here.
-
-Other templates and resources like this can be found on the school's GitHub page.
+👤 **Autor**
+**Bryan Jumbo Torres**
+📍 Mallorca, España
+💻 Proyecto académico / profesional de Machine Learning
